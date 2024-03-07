@@ -131,7 +131,7 @@ def create_combo_cols(prop, player_df):
     if num_props == 5:
         player_df.loc[:, prop] = player_df[prop_list[0]] + player_df[prop_list[1]] + player_df[prop_list[2]] + player_df[prop_list[3]] + player_df[prop_list[4]]
 
-    player_df.insert(9, prop, player_df.pop(prop))
+    player_df.insert(11, prop, player_df.pop(prop))
 
     return player_df
 
