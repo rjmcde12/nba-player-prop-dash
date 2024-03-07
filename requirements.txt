@@ -2,5 +2,6 @@ dash==2.14.2
 numpy==1.26.4
 pandas==1.5.3
 plotly==5.9.0
+nba_api==1.4.1
 gunicorn
 dash-tools
