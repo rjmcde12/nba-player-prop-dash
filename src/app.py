@@ -26,9 +26,15 @@ all_players_df = pd.read_csv('player_gamelogs_2023.csv', index_col=None)
 game_df = pd.read_csv('team_gamelogs_2023.csv', index_col=None)
 
 # +
+# player_df = nbaprop.player_gamelog_name(all_players_df, 'Jayson Tatum')
+# season = player_df.sort_values(by='team_game_no', ascending = False)
+# season
+
+# +
 
 
 app = Dash(__name__)
+
 server = app.server
 
 app.layout = html.Div([
