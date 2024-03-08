@@ -83,10 +83,10 @@ def stat_overview(player_df):
     b2b_avg = player_last_x_avg(player_b2b)
     averages = pd.concat([avg_5, avg_10, avg_season, b2b_avg])
     index_names = ['Last 5 Avg', 'Last 10 Avg', 'Season Avg', 'B2B Avg']
-    averages['index'] = index_names
-    averages.set_index('index', inplace=True)
-    averages.index.name = None
     averages = averages.map(lambda x: round(x, 1))
+    averages = averages.reset_index()
+    averages['index'] = index_names
+    averages = averages.rename(columns={'index':'Stat'})
     averages.fillna(0.0, inplace=True)
     return averages
 
@@ -166,11 +166,17 @@ def player_gamelogs_opp(player_df, next_opp):
     return opp_gamelogs
 
 
-def past_prop_results(last_5, last_10, season, b2b, prop, line):
-    hit_last_5 = (last_5[prop] > line).sum()
-    hit_last_10 = (last_10[prop] > line).sum()
-    hit_season = (season[prop] > line).sum()
-    hit_b2b = (b2b[prop] > line).sum()
+def past_prop_results(last_5, last_10, season, b2b, prop, line, side):
+    if side == 'Over':
+        hit_last_5 = (last_5[prop] > line).sum()
+        hit_last_10 = (last_10[prop] > line).sum()
+        hit_season = (season[prop] > line).sum()
+        hit_b2b = (b2b[prop] > line).sum()
+    else:
+        hit_last_5 = (last_5[prop] < line).sum()
+        hit_last_10 = (last_10[prop] < line).sum()
+        hit_season = (season[prop] < line).sum()
+        hit_b2b = (b2b[prop] < line).sum()
     total_b2b = len(b2b)
     total_games = len(season['matchup'])
 
@@ -264,6 +270,17 @@ def coming_off_b2b(player_id, df):
     next_game_rest = next_game_rest.days
     b2b_warning = 'Yes' if next_game_rest == 1 else 'No'
     return b2b_warning
+
+
+def drop_b2b_row(prop_df, avg_df, b2b_warning):
+    if b2b_warning == 'Yes':
+        pass
+    else:
+        prop_df = prop_df.drop(prop_df[prop_df['Stat'].str.startswith('B2B')].index, axis=0)
+        avg_df = avg_df.drop(avg_df[avg_df['Stat'].str.startswith('B2B')].index, axis=0)
+    # avg_df = avg_df.reset_index()
+    # avg_df.rename(columns={'index':'Stat'}, inplace=True)
+    return prop_df, avg_df
 
 
 def create_final_table(df):
