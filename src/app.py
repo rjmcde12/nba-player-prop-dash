@@ -18,8 +18,8 @@ import numpy as np
 import nba_api_functions as nba
 import nba_prop_functions as nbaprop
 from dash import Dash, dcc, html, Input, Output, State, Patch, MATCH, ALLSMALLER, callback, dash_table
-import pandas as pd
 import dash_bootstrap_components as dbc
+import pandas as pd
 import plotly.express as px
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
