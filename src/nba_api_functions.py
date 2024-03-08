@@ -25,6 +25,7 @@ from nba_api.stats.endpoints import teamgamelog
 from nba_api.stats.endpoints import winprobabilitypbp as winprob
 from nba_api.stats.endpoints import BoxScoreAdvancedV3 as box
 import time
+from datetime import datetime
 
 
 def get_active_players_list():
@@ -117,8 +118,9 @@ def player_gamelog_cleanup(df, game_df, active_players_df):
         + '-' + all_players_logs_df['opp_pts'].astype(str)
     )
     
+    
     all_players_logs_df = all_players_logs_df[[
-        'game_date', 'team_short', 'matchup', 'outcome', 'full_name', 
+        'game_date', 'team_short', 'opp_short', 'matchup', 'outcome', 'full_name', 'Player_ID',
         'MIN', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'team_game_no'
     ]]
     
