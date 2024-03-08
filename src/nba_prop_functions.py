@@ -256,11 +256,8 @@ def add_b2b_flag(player_df):
 
 
 def coming_off_b2b(player_id, df):
-    # df = df.sort_values(by=columns'GAME_DATE
-    next_game_obj = next.PlayerNextNGames(number_of_games = 1, player_id = int(player_id))
-    next_game_df = pd.DataFrame(next_game_obj.get_data_frames()[0])
-    next_game_df['GAME_DATE'] = pd.to_datetime(next_game_df['GAME_DATE'], format='%b %d, %Y')
-    next_game_date = next_game_df.loc[0,'GAME_DATE']
+    df['next_game_date'] = pd.to_datetime(df['next_game_date'], format='%b %d, %Y')
+    next_game_date = df.loc[0,'next_game_date']
     df['game_date'] = pd.to_datetime(df['game_date'], format='%b %d, %Y')
     last_game_date = df.loc[0, 'game_date']
     next_game_rest = next_game_date - last_game_date
@@ -278,6 +275,6 @@ def create_final_table(df):
     df['Game #'] = df['Game #'].astype(int)
     df['Game Date'] = pd.to_datetime(df['Game Date'], format='%b %d, %Y')
     df['Game Date'] = df['Game Date'].dt.strftime('%b %d, %Y')
-    df.drop(columns=['full_name', 'Player_ID', 'days_rest'], inplace=True)
+    df.drop(columns=['full_name', 'Player_ID', 'days_rest', 'next_game_date','next_game_opp'], inplace=True)
 
     return df

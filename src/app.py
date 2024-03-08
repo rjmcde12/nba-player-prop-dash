@@ -34,7 +34,6 @@ game_df = pd.read_csv('team_gamelogs_2023.csv', index_col=None)
 
 
 app = Dash(__name__)
-
 server = app.server
 
 app.layout = html.Div([
@@ -103,10 +102,10 @@ def create_table(n, selected_df, player_selected, prop_selection, prop_line):
     player_df = nbaprop.player_gamelog_name(all_players_df, player_selected)
     player_df = nbaprop.add_b2b_flag(player_df)
     player_id = player_df.loc[0,'Player_ID']
-    next_opp = nbaprop.player_next_opp(player_id)
+    next_opp = player_df.loc[0, 'next_game_opp']
     opp_df = nbaprop.player_gamelogs_opp(player_df, next_opp)
     combo_prop = '+'.join(prop_selection)
-    next_opp = nbaprop.player_next_opp(player_id)
+    
     
     if len(prop_selection) > 1:
         player_df = nbaprop.create_combo_cols(combo_prop, player_df)

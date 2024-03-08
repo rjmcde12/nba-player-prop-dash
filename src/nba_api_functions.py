@@ -107,7 +107,8 @@ def player_gamelog_cleanup(df, game_df, active_players_df):
         'game_date','game_id','team_id','opp_id', 'team_short','opp_short', 
         'team_home', 'team_wl', 'team_pts', 'opp_pts'
     ]]
-    
+    game_matchup['game_id'] = game_matchup['game_id'].astype('int64')
+    df['Game_ID'] = df['Game_ID'].astype('int64')
     all_players_logs_df = pd.merge(df, game_matchup, left_on=['Game_ID','TEAM_ID'], right_on=['game_id','team_id'])
     all_players_logs_df = pd.merge(all_players_logs_df, active_players_df, left_on='Player_ID', right_on='id')
     all_players_logs_df['location'] = all_players_logs_df['team_home'].apply(lambda x: '.vs ' if x == 1 else '@ ')
@@ -121,9 +122,9 @@ def player_gamelog_cleanup(df, game_df, active_players_df):
     
     all_players_logs_df = all_players_logs_df[[
         'game_date', 'team_short', 'opp_short', 'matchup', 'outcome', 'full_name', 'Player_ID',
-        'MIN', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'team_game_no'
+        'MIN', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'team_game_no', 'next_game_date', 'next_game_opp'
     ]]
-    
+    all_players_logs_df = all_players_logs_df.drop_duplicates(subset=all_players_logs_df.columns)
     return all_players_logs_df
 
 
