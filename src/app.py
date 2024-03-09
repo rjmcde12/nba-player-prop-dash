@@ -18,8 +18,8 @@ import numpy as np
 import nba_api_functions as nba
 import nba_prop_functions as nbaprop
 from dash import Dash, dcc, html, Input, Output, State, Patch, MATCH, ALLSMALLER, callback, dash_table
-import dash_bootstrap_components as dbc
 import pandas as pd
+import dash_bootstrap_components as dbc
 import plotly.express as px
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
@@ -28,15 +28,10 @@ dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.mi
 all_players_df = pd.read_csv('player_gamelogs_2023.csv', index_col=None)
 game_df = pd.read_csv('team_gamelogs_2023.csv', index_col=None)
 
-# +
-# player_df = nbaprop.player_gamelog_name(all_players_df, 'Jayson Tatum')
-# season = player_df.sort_values(by='team_game_no', ascending = False)
-# season
-
-# +
 
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc_css])
+
 server = app.server
 
 app.layout = html.Div(className='dbc', children=[
