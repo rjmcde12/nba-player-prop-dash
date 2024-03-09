@@ -83,7 +83,7 @@ def stat_overview(player_df):
     b2b_avg = player_last_x_avg(player_b2b)
     averages = pd.concat([avg_5, avg_10, avg_season, b2b_avg])
     index_names = ['Last 5 Avg', 'Last 10 Avg', 'Season Avg', 'B2B Avg']
-    averages = averages.map(lambda x: round(x, 1))
+    averages = averages.round(1)
     averages = averages.reset_index()
     averages['index'] = index_names
     averages = averages.rename(columns={'index':'Stat'})
