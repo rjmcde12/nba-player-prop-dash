@@ -66,7 +66,7 @@ def main_loop():
         current_time = datetime.now().strftime("%H:%M:%S")
 
         # If it's 5 am or very close to 5 am, execute the pending tasks and fetch data from the database
-        if current_time == '15:50:20':
+        if current_time == '10:30:00':
             schedule.run_pending()
             all_players_df, game_df = fetch_data_from_database()
             print("Data fetched from the database at 5 am.")
