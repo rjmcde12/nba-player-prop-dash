@@ -13,6 +13,7 @@
 #     name: python3
 # ---
 
+# +
 import pandas as pd
 import nba_api
 from nba_api.stats.static import players
@@ -27,6 +28,11 @@ from nba_api.stats.endpoints import BoxScoreAdvancedV3 as box
 import time
 from datetime import datetime
 
+if __name__ == '__main__':
+    print('this is the main block of code')
+
+
+# -
 
 def get_active_players_list():
     active_players_obj = players.get_active_players()

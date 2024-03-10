@@ -13,6 +13,7 @@
 #     name: python3
 # ---
 
+# +
 import pandas as pd
 import numpy as np
 import nba_api
@@ -31,6 +32,11 @@ import time
 from datetime import datetime
 pd.options.mode.copy_on_write = True
 
+if __name__ == '__main__':
+    print('this is the main block of code')
+
+
+# -
 
 def player_gamelog_id(df, player_id):
     player_df = df[df['Player_ID'] == player_id]
