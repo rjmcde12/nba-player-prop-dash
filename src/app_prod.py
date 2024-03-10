@@ -21,40 +21,11 @@ from dash import Dash, dcc, html, Input, Output, State, Patch, MATCH, ALLSMALLER
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
-import pymongo                                                  
-from bson.objectid import ObjectId
-from dotenv import load_dotenv
-import os
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
 
-# +
-# all_players_df = pd.read_csv('player_gamelogs_2023.csv', index_col=None)
-# game_df = pd.read_csv('team_gamelogs_2023.csv', index_col=None)
-
-# +
-# connecting to mongodb
-load_dotenv()
-uri = os.getenv('URI')
-client = pymongo.MongoClient(uri)
-db = client['nba-stats']
-
-# creating pandas df for players stats
-player_stats = db['player_stats']
-player_cursor = player_stats.find()
-all_players_df = pd.DataFrame(list(player_cursor))
-all_players_df = all_players_df.drop(columns='_id')
-
-
-# creating pandas df for team gamelogs
-team_gamelogs = db['team_gamelogs']
-team_cursor = team_gamelogs.find()
-game_df = pd.DataFrame(list(team_cursor))
-game_df = game_df.drop(columns='_id')
-
-display(all_players_df.iloc[:5])
-display(game_df.iloc[:5])
-
+all_players_df = pd.read_csv('player_gamelogs_2023.csv', index_col=None)
+game_df = pd.read_csv('team_gamelogs_2023.csv', index_col=None)
 
 # +
 default_table_style = {
