@@ -13,6 +13,7 @@
 #     name: python3
 # ---
 
+# +
 import pandas as pd
 import numpy as np
 import nba_api
@@ -31,6 +32,11 @@ import time
 from datetime import datetime
 pd.options.mode.copy_on_write = True
 
+if __name__ == '__main__':
+    print('this is the main block of code')
+
+
+# -
 
 def player_gamelog_id(df, player_id):
     player_df = df[df['Player_ID'] == player_id]
@@ -177,6 +183,12 @@ def past_prop_results(last_5, last_10, season, b2b, prop, line, side):
         hit_last_10 = (last_10[prop] < line).sum()
         hit_season = (season[prop] < line).sum()
         hit_b2b = (b2b[prop] < line).sum()
+
+    hit_last_5 = hit_last_5 or 0
+    hit_last_10 = hit_last_10 or 0
+    hit_season = hit_season or 0
+    hit_b2b = hit_b2b or 0
+    
     total_b2b = len(b2b)
     total_games = len(season['matchup'])
 
@@ -184,7 +196,11 @@ def past_prop_results(last_5, last_10, season, b2b, prop, line, side):
         hit_pct_5 = (hit_last_5 / 5) * 100
         hit_pct_10 = (hit_last_10 / 10) * 100
         hit_pct_season = round((hit_season / total_games) * 100, 1)
-        hit_pct_b2b = round((hit_b2b / total_b2b) * 100, 1)
+        
+        if total_b2b != 0:
+            hit_pct_b2b = round((hit_b2b / total_b2b) * 100, 1)
+        else:
+            hit_pct_b2b = 0 
     
         player_rolling = season.copy()
         

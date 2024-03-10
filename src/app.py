@@ -52,10 +52,6 @@ team_cursor = team_gamelogs.find()
 game_df = pd.DataFrame(list(team_cursor))
 game_df = game_df.drop(columns='_id')
 
-display(all_players_df.iloc[:5])
-display(game_df.iloc[:5])
-
-
 # +
 default_table_style = {
     'overflowX': 'auto',
