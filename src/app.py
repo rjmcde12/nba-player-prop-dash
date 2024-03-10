@@ -25,6 +25,9 @@ import pymongo
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 import os
+import schedule
+import time
+from datetime import datetime
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
 
@@ -33,24 +36,49 @@ dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.mi
 # game_df = pd.read_csv('team_gamelogs_2023.csv', index_col=None)
 
 # +
-# connecting to mongodb
-load_dotenv()
-uri = os.getenv('URI')
-client = pymongo.MongoClient(uri)
-db = client['nba-stats']
+def fetch_data_from_database():
+    # connecting to mongodb
+    load_dotenv()
+    uri = os.getenv('URI')
+    client = pymongo.MongoClient(uri)
+    db = client['nba-stats']
+    
+    # creating pandas df for players stats
+    player_stats = db['player_stats']
+    player_cursor = player_stats.find()
+    all_players_df = pd.DataFrame(list(player_cursor))
+    all_players_df = all_players_df.drop(columns='_id')
+    
+    
+    # creating pandas df for team gamelogs
+    team_gamelogs = db['team_gamelogs']
+    team_cursor = team_gamelogs.find()
+    game_df = pd.DataFrame(list(team_cursor))
+    game_df = game_df.drop(columns='_id')
+    print("Database update successful at:", datetime.now())
 
-# creating pandas df for players stats
-player_stats = db['player_stats']
-player_cursor = player_stats.find()
-all_players_df = pd.DataFrame(list(player_cursor))
-all_players_df = all_players_df.drop(columns='_id')
+    return all_players_df, game_df
+
+def main_loop():
+    # Run the task scheduler loop
+    while True:
+        # Get the current time
+        current_time = datetime.now().strftime("%H:%M:%S")
+
+        # If it's 5 am or very close to 5 am, execute the pending tasks and fetch data from the database
+        if current_time == '15:50:20':
+            schedule.run_pending()
+            all_players_df, game_df = fetch_data_from_database()
+            print("Data fetched from the database at 5 am.")
+            # Sleep for the remaining time until the next day
+            time.sleep(24 * 3600 - 1)  # Sleep until 23:59:59
+
+        # Sleep for 1 second and then check again
+        time.sleep(1)
 
 
-# creating pandas df for team gamelogs
-team_gamelogs = db['team_gamelogs']
-team_cursor = team_gamelogs.find()
-game_df = pd.DataFrame(list(team_cursor))
-game_df = game_df.drop(columns='_id')
+all_players_df, game_df = fetch_data_from_database()
+
 
 # +
 default_table_style = {
@@ -269,5 +297,9 @@ def create_table(n, selected_tab, player_selected, prop_selection, prop_line, pr
     return  b2b_message, prop_results_table, avg_table, opp_header, opp_table, gamelogs_tab, fig
 
 
+
 if __name__ == '__main__':
+# grabs updated data from db every day at 5am
+    schedule.every().day.at('05:00').do(fetch_data_from_database) 
+    main_loop()
     app.run_server(debug=True)
