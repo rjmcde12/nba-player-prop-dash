@@ -27,6 +27,7 @@ dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.mi
 all_players_df = pd.read_csv('player_gamelogs_2023.csv', index_col=None)
 game_df = pd.read_csv('team_gamelogs_2023.csv', index_col=None)
 
+
 # +
 default_table_style = {
     'overflowX': 'auto',
@@ -71,7 +72,10 @@ default_styles = {
 # +
 
 
+
+
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc_css])
+
 server = app.server
 
 app.layout = html.Div(className='dbc', children=[
