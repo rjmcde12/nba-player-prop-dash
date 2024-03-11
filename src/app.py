@@ -65,8 +65,8 @@ def main_loop():
         # Get the current time
         current_time = datetime.now().strftime("%H:%M:%S")
 
-        # If it's 5 am or very close to 5 am, execute the pending tasks and fetch data from the database
-        if current_time == '10:30:00':
+        # If it's 1045 am or very close to 1045 am, execute the pending tasks and fetch data from the database
+        if current_time == '10:45':
             schedule.run_pending()
             all_players_df, game_df = fetch_data_from_database()
             print("Data fetched from the database at 5 am.")
@@ -300,6 +300,6 @@ def create_table(n, selected_tab, player_selected, prop_selection, prop_line, pr
 
 if __name__ == '__main__':
 # grabs updated data from db every day at 5am
-    schedule.every().day.at('05:00').do(fetch_data_from_database) 
+    schedule.every().day.at('10:45').do(fetch_data_from_database) 
     main_loop()
     app.run_server(debug=True)
