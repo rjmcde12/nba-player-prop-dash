@@ -39,7 +39,7 @@ if __name__ == '__main__':
 # -
 
 def player_gamelog_id(df, player_id):
-    player_df = df[df['Player_ID'] == player_id]
+    player_df = df[df['player_id'] == player_id]
     return player_df
 
 
@@ -215,7 +215,7 @@ def past_prop_results(last_5, last_10, season, b2b, prop, line, side):
         hit_pct_roll_10 = round(player_rolling['rolling_10_pct'].mean(), 1) * 100
         
         data = {
-            'Stat':['Last 5', 'Last 5 Rolling Avg', 'Last 10', 'Last 10 Rolling Avg', 'Season', f'B2B ({str(total_b2b)})'],
+            'Stat':['Last 5', 'Last 5 Rolling Avg', 'Last 10', 'Last 10 Rolling Avg', f'Season ({str(total_games)})', f'B2B ({str(total_b2b)})'],
             '# Hits':[hit_last_5, '-', hit_last_10, '-', hit_season, hit_b2b],
             '% Hit':[hit_pct_5, hit_pct_roll_5, hit_pct_10, hit_pct_roll_10, hit_pct_season, hit_pct_b2b]
         }
@@ -308,6 +308,6 @@ def create_final_table(df):
     df['Game #'] = df['Game #'].astype(int)
     df['Game Date'] = pd.to_datetime(df['Game Date'], format='%b %d, %Y')
     df['Game Date'] = df['Game Date'].dt.strftime('%b %d, %Y')
-    df.drop(columns=['full_name', 'Player_ID', 'days_rest', 'next_game_date','next_game_opp'], inplace=True)
+    df.drop(columns=['full_name', 'player_id', 'days_rest', 'next_game_date','next_game_opp', 'game_id'], inplace=True)
 
     return df

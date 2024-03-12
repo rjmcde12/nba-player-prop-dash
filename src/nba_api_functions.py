@@ -13,7 +13,9 @@
 #     name: python3
 # ---
 
+# +
 import pandas as pd
+import numpy as np
 import nba_api
 from nba_api.stats.static import players
 from nba_api.stats.static import teams
@@ -27,6 +29,11 @@ from nba_api.stats.endpoints import BoxScoreAdvancedV3 as box
 import time
 from datetime import datetime
 
+if __name__ == '__main__':
+    print('this is the main block of code')
+
+
+# -
 
 def get_active_players_list():
     active_players_obj = players.get_active_players()
@@ -102,6 +109,7 @@ def get_player_gamelogs(player_id, season=None):
     return player_gamelog_df
 
 
+# players that changed teams are getting screwed up when combining game and player data
 def player_gamelog_cleanup(df, game_df, active_players_df):
     game_matchup = game_df.loc[:, [
         'game_date','game_id','team_id','opp_id', 'team_short','opp_short', 
@@ -121,11 +129,29 @@ def player_gamelog_cleanup(df, game_df, active_players_df):
     
     
     all_players_logs_df = all_players_logs_df[[
-        'game_date', 'team_short', 'opp_short', 'matchup', 'outcome', 'full_name', 'Player_ID',
-        'MIN', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'team_game_no', 'next_game_date', 'next_game_opp'
+        'Game_ID','game_date', 'team_short', 'opp_short', 'matchup', 'outcome', 'full_name', 'Player_ID',
+        'MIN', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'FG3M', 'team_game_no', 'next_game_date', 'next_game_opp'
     ]]
+    all_players_logs_df = all_players_logs_df.rename(columns={'Game_ID':'game_id','Player_ID':'player_id'})
     all_players_logs_df = all_players_logs_df.drop_duplicates(subset=all_players_logs_df.columns)
     return all_players_logs_df
+
+
+def add_past_next_games(df):
+    current_next = df.groupby('player_id')[['next_game_date', 'next_game_opp', 'game_id']].last()
+    current_next.reset_index(inplace=True)
+    current_next.rename(columns={'next_game_date':'current_next_date', 'next_game_opp':'current_next_opp'}, inplace=True)
+    
+    df['next_game_date'] = df['game_date'].shift(-1)
+    df['next_game_opp'] = df['opp_short'].shift(-1)
+    
+    updated_df = pd.merge(df, current_next, on=['player_id', 'game_id'], how='left')
+    
+    updated_df['next_game_date'] = np.where(updated_df['current_next_date'].isna(), updated_df['next_game_date'], updated_df['current_next_date'])
+    updated_df['next_game_opp'] = np.where(updated_df['current_next_opp'].isna(), updated_df['next_game_opp'], updated_df['current_next_opp'])
+    
+    updated_df = updated_df.drop(columns=['current_next_date', 'current_next_opp'])
+    return updated_df
 
 
 def points_in_first(df, player_id):
