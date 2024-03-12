@@ -32,8 +32,9 @@ dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.mi
 
 
 # +
-# all_players_df = pd.read_csv('player_gamelogs_2023.csv', index_col=None)
-# game_df = pd.read_csv('team_gamelogs_2023.csv', index_col=None)
+# file_path = '/Users/ryan/DashApps/nba_prop/'
+# all_players_df = pd.read_csv(f'{file_path}player_gamelogs_2023.csv', index_col=None)
+# game_df = pd.read_csv(f'{file_path}team_gamelogs_2023.csv', index_col=None)
 
 # +
 def fetch_data_from_database():
@@ -41,10 +42,10 @@ def fetch_data_from_database():
     load_dotenv()
     uri = os.getenv('URI')
     client = pymongo.MongoClient(uri)
-    db = client['nba-stats']
+    db = client['nba_stats']
     
     # creating pandas df for players stats
-    player_stats = db['player_stats']
+    player_stats = db['player_gamelogs']
     player_cursor = player_stats.find()
     all_players_df = pd.DataFrame(list(player_cursor))
     all_players_df = all_players_df.drop(columns='_id')
@@ -58,24 +59,6 @@ def fetch_data_from_database():
     print("Database update successful at:", datetime.now())
 
     return all_players_df, game_df
-
-def main_loop():
-    # Run the task scheduler loop
-    while True:
-        # Get the current time
-        current_time = datetime.now().strftime("%H:%M:%S")
-
-        # If it's 1045 am or very close to 1045 am, execute the pending tasks and fetch data from the database
-        if current_time == '11:05':
-            schedule.run_pending()
-            all_players_df, game_df = fetch_data_from_database()
-            print("Data fetched from the database at 5 am.")
-            # Sleep for the remaining time until the next day
-            time.sleep(24 * 3600 - 1)  # Sleep until 23:59:59
-
-        # Sleep for 1 second and then check again
-        time.sleep(1)
-
 
 all_players_df, game_df = fetch_data_from_database()
 
@@ -228,8 +211,9 @@ def create_table(n, selected_tab, player_selected, prop_selection, prop_line, pr
     player_df = nbaprop.player_gamelog_name(all_players_df, player_selected)
     player_df = nbaprop.add_b2b_flag(player_df)
     avg_table = nbaprop.stat_overview(player_df)
-    player_id = player_df.loc[0,'Player_ID']
-    next_opp = player_df.loc[0, 'next_game_opp']
+    player_id = player_df.loc[0,'player_id']
+    last_row = player_df.index[-1]
+    next_opp = player_df.loc[last_row, 'next_game_opp']
     opp_df = nbaprop.player_gamelogs_opp(player_df, next_opp)
     combo_prop = '+'.join(prop_selection)
     
@@ -299,7 +283,4 @@ def create_table(n, selected_tab, player_selected, prop_selection, prop_line, pr
 
 
 if __name__ == '__main__':
-# grabs updated data from db every day at 5am
-    all_players_df, game_df = schedule.every().day.at('11:05').do(fetch_data_from_database) 
-    main_loop()
     app.run_server(debug=True)
