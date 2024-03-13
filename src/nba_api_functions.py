@@ -132,7 +132,7 @@ def player_gamelog_cleanup(df, game_df, active_players_df):
         'Game_ID','game_date', 'team_short', 'opp_short', 'matchup', 'outcome', 'full_name', 'Player_ID',
         'MIN', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'FG3M', 'team_game_no', 'next_game_date', 'next_game_opp'
     ]]
-    all_players_logs_df = all_players_logs_df.rename(columns={'Game_ID':'game_id','Player_ID':'player_id'})
+    all_players_logs_df = all_players_logs_df.rename(columns={'Game_ID':'game_id','Player_ID':'player_id', 'FG3M':'3PT'})
     all_players_logs_df = all_players_logs_df.drop_duplicates(subset=all_players_logs_df.columns)
     return all_players_logs_df
 

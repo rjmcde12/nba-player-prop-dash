@@ -58,7 +58,7 @@ def player_last_x_gamelogs(player_df, games=112):
 
 def player_last_x_avg(player_df, games=None):
     last_x = player_last_x_gamelogs(player_df, games)
-    avg_x = last_x[['MIN','PTS','REB','AST','STL','BLK']].mean().reset_index()
+    avg_x = last_x[['MIN','PTS','REB','AST','STL','BLK', '3PT']].mean().reset_index()
     if games is not None:
         avg_x.columns = ['Stat',('Last ' + str(games) + ' Avg')]
     else:
@@ -149,7 +149,7 @@ def create_combo_cols(prop, player_df):
     if num_props == 5:
         player_df.loc[:, prop] = player_df[prop_list[0]] + player_df[prop_list[1]] + player_df[prop_list[2]] + player_df[prop_list[3]] + player_df[prop_list[4]]
 
-    player_df.insert(13, prop, player_df.pop(prop))
+    player_df.insert(15, prop, player_df.pop(prop))
 
     return player_df
 
@@ -203,8 +203,11 @@ def past_prop_results(last_5, last_10, season, b2b, prop, line, side):
             hit_pct_b2b = 0 
     
         player_rolling = season.copy()
-        
-        player_rolling['covered'] = player_rolling[prop].apply(lambda x: 1 if x > line else 0)
+
+        if side == 'Over':
+            player_rolling['covered'] = player_rolling[prop].apply(lambda x: 1 if x > line else 0)
+        else:
+            player_rolling['covered'] = player_rolling[prop].apply(lambda x: 1 if x < line else 0)
         
         player_rolling['rolling_5'] = player_rolling['covered'].transform(lambda x: x.rolling(window=5, min_periods=0).sum()).fillna(0) 
         player_rolling['rolling_5_pct'] = player_rolling['rolling_5'] / 5
@@ -302,7 +305,7 @@ def drop_b2b_row(prop_df, avg_df, b2b_warning):
 def create_final_table(df):
     df = df.rename(columns={
         'game_date':'Game Date', 'team_short':'Team', 'opp_short':'Opp', 
-        'matchup':'Matchup', 'outcome':'Outcome', 'team_game_no':'Game #'
+        'matchup':'Matchup', 'outcome':'Outcome','team_game_no':'Game #'
     })
     
     df['Game #'] = df['Game #'].astype(int)

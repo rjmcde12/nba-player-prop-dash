@@ -102,9 +102,6 @@ default_styles = {
     'style_cell': default_cell_style,
     'style_data_conditional': default_conditional_style
 }
-# -
-
-
 
 
 # +
@@ -114,8 +111,8 @@ app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc_css])
 server = app.server
 
 app.layout = html.Div(className='dbc', children=[
-    dbc.Container(children = [ #can add style={} here
-            dbc.Row([
+    dbc.Container([
+        dbc.Row([
             dbc.Col(html.H1('Player Prop Overview', style={'textAlign':'center', 'margin-bottom':'30px'}), width=12)
         ], justify='center'),
         dbc.Stack([
@@ -129,8 +126,7 @@ app.layout = html.Div(className='dbc', children=[
                 html.Div('Prop', style={'textAlign':'left'}),
                 dcc.Dropdown(
                     id='prop-selection', multi=True,
-                    options = [{'value':'PTS', 'label':'PTS'},{'value':'AST', 'label':'AST'},{'label':'REB', 'value':'REB'},
-                               {'label':'BLK', 'value':'BLK'}, {'label':'STL', 'value':'STL'}, {'value':'3PT', 'label':'3PT'}],
+                    options = ['PTS','AST','REB','BLK','STL'],
                     value = ['BLK','STL'],
                     style={'width':'400px'}
                 ),
@@ -140,7 +136,8 @@ app.layout = html.Div(className='dbc', children=[
                     options=[{'label':'Over', 'value':'Over'},{'label':'Under', 'value':'Under'}],
                     value='Over', id='prop-side', style={'width':'auto', 'align':'left'}
                 )
-                ], gap=2, style={'size':'auto'}),
+                ], gap=2),
+        # Rest 
         html.Div(''),
         html.Div(
             dbc.Button(
@@ -148,74 +145,22 @@ app.layout = html.Div(className='dbc', children=[
         ),
         html.Div(id='b2b-warning'),
         html.Hr(), 
-        html.Div(children = [
-            dbc.Row([
-                dbc.Col([
-                    html.H3(children = [
-                        ('Past Prop Results'),
-                            dbc.Button('?',id='open', class_name={'color':'ms-auto'}, n_clicks=0),
-                            dbc.Modal(
-                                [
-                                    dbc.ModalHeader(dbc.ModalTitle('Data Explained')),
-                                    dbc.ModalBody([
-                                        html.P([
-                                            html.Strong('# Hits:'),
-                                            ' Count of how often over the corresponding time span the player hit the prop bet.'
-                                        ]) ,
-                                        html.P([
-                                            html.Strong('Note:'),
-                                            'Only wins are included in the count. Pushes are marked as a loss.'
-                                        ]),
-                                        html.P([
-                                            html.Strong('Hits:'),
-                                            ' Takes # Hit and converts it to a percentage.'
-                                        ]),
-                                        html.P([
-                                            html.Strong('Fair Odds:'),
-                                            ' Translates the corresponding % Hit to American odds. If you believe a particular stat to be an accurate estimation' 
-                                            'of the odds for the prop winning, this would be the break even point for the bet. If you can find odds at a sportsbook'
-                                            ' with a better payout, it would be a positive Expected Value bet.'
-                                        ]),
-                                        html.P([
-                                            html.Strong('Last 5/10:'),
-                                            ' Results from previous 5/10 games played by the player.'
-                                        ]),
-                                        html.P([
-                                            html.Strong('Rolling 5/10:'),
-                                            ' This looks at the % Hit for every unique 5/10 consecutive game stretch and then takes the average of those.'
-                                        ]),
-                                        html.P([
-                                            html.Strong('Season:'),
-                                            ' Results of all games played by the player this season. Total games in parentheses.'
-                                        ]),
-                                        html.P([
-                                            html.Strong('B2B:'),
-                                            ' Results from the second game of back-backs this season. Only counts as a back-to-back if the player'
-                                            ' appeared in both games. Total B2B games in parentheses'
-                                        ])
-                                    ]),
-                                    dbc.ModalFooter(
-                                        dbc.Button(
-                                            'Close', id='close', class_name='ms-auto', n_clicks=0
-                                        )
-                                    )
-                                ],id='modal', centered=True, is_open=False 
-                            )], style={'display': 'flex', 'flex':'1'}),
-                    html.Div(id='stat-overview-table')
-                ], class_name='col col-auto'
-                       ),
-                dbc.Col([  
-                    html.H3('Player Averages'),
-                    html.Div(id='averages-table')
-                ],class_name='col col-auto'
-                       ),
-            ], style={'justify':'center'})
-        ]
-                ), 
+        dbc.Row([
+            dbc.Col([  
+                html.H3('Past Prop Results'),
+                html.Div(id='stat-overview-table')
+            ], width=6
+                   ),
+            dbc.Col([  
+                html.H3('Player Averages'),
+                html.Div(id='averages-table')
+            ], width=6
+                   )
+        ]),
         html.Hr(),
         html.H3('Player Gamelogs',style={'margin-bottom':'5px', 'margin-top':'10px'}),
         html.H5(id = 'next-opp-header'),
-        html.Div(id='next-opp-gamelogs', style={'size':'auto','overflow':'auto'}),
+        html.Div(id='next-opp-gamelogs', style={'margin-bottom':'10px', 'margin-top':'5px'}),
         html.H5('Recent Games'),
         html.Div(
             [
@@ -229,24 +174,12 @@ app.layout = html.Div(className='dbc', children=[
                     id='tab-chosen',
                     active_tab='last_5'
                 ),
-        html.Div(id='player-stats-table-2', style={'size':'auto','overflow':'auto'})
+        html.Div(id='player-stats-table-2'),
             ]
         ),
         dcc.Graph(id='prop-graph')
     ])
 ])
-
-@app.callback(
-    Output('modal','is_open'),
-    [Input('open', 'n_clicks'), Input('close','n_clicks')],
-    State('modal','is_open'),
-)
-
-def table_explainer(n1, n2, is_open):
-    if n1 or n2:
-        return not is_open
-    else:
-        return is_open
 
 @app.callback(
     [
@@ -273,15 +206,14 @@ def table_explainer(n1, n2, is_open):
 )
 
 
-def create_tables(n, selected_tab, player_selected, prop_selection, prop_line, prop_side):
+def create_table(n, selected_tab, player_selected, prop_selection, prop_line, prop_side):
     
     player_df = nbaprop.player_gamelog_name(all_players_df, player_selected)
     player_df = nbaprop.add_b2b_flag(player_df)
-    player_df.insert(14, '3PT', player_df.pop('3PT'))
     avg_table = nbaprop.stat_overview(player_df)
     player_id = player_df.loc[0,'player_id']
-    player_df = player_df.sort_values(by='team_game_no', ascending=False).reset_index(drop=True)
-    next_opp = player_df.loc[0, 'next_game_opp']
+    last_row = player_df.index[-1]
+    next_opp = player_df.loc[last_row, 'next_game_opp']
     opp_df = nbaprop.player_gamelogs_opp(player_df, next_opp)
     combo_prop = '+'.join(prop_selection)
     
@@ -352,4 +284,3 @@ def create_tables(n, selected_tab, player_selected, prop_selection, prop_line, p
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-    # app.run_server(debug=True, port=8051)
